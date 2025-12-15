@@ -32,6 +32,9 @@ requirements:
     - setuptools
   run:
     - python
+  run_constrained:
+    # pyre2 is a different package for providing the google re2 python bindings
+    - pyre2 ==9999999999
 
 test:
   imports:
