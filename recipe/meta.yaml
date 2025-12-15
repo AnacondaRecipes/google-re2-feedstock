@@ -10,22 +10,24 @@ source:
   sha256: 1db14a292ee8303b91e91e7c37e05ac17d3c467f29416c79ac70a78be3e65bda
 
 build:
-  skip: true  # [win]
+  skip: true  # [py<39]
+  script_env:
+    # Force C++17 for building ("C++ versions less than C++17 are not supported").
+    - CXXFLAGS=-std=c++17  # [unix]
+    - CL=/std:c++17  # [win]
+    # Sometimes build fails on CI by not founding libclang-cpp.dylib
+    - DYLD_LIBRARY_PATH=${BUILD_PREFIX}/lib  # [osx]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - pybind11                               # [build_platform != target_platform]
-    - {{ compiler('c') }}
-    - {{ stdlib("c") }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
   host:
     - python
-    - pybind11
     - pip
+    - pybind11
     - re2
     - setuptools
   run:
@@ -43,12 +45,16 @@ test:
     - pip
 
 about:
-  home: https://github.com/google/re2/tree/main/python
+  home: https://github.com/google/re2
   summary: RE2 Python bindings
+  description: |
+    RE2 is an efficient, principled regular expression library that has been
+    used in production at Google and many other places since 2006.
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  dev_url: https://github.com/google/re2
+  dev_url: https://github.com/google/re2/tree/main/python
+  doc_url: https://github.com/google/re2
 
 extra:
   recipe-maintainers:
